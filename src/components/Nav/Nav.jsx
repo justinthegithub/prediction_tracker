@@ -36,6 +36,12 @@ function Nav() {
               Market Overview
             </Link>
 
+            <Link className="navLink" to="/FavoritesList">
+              Favorites List
+            </Link>
+
+
+
             <LogOutButton className="navLink" />
           </>
         )}

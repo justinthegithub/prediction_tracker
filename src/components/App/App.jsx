@@ -20,6 +20,7 @@ import LandingPage from '../LandingPage/LandingPage';
 import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
 import MarketOverview from '../MarketOverview/MarketOverview';
+import FavoritesList from '../FavoritesList/FavoritesList'; // Added import
 
 import './App.css';
 
@@ -116,6 +117,13 @@ function App() {
             path="/MarketOverview"
           >
             <MarketOverview />
+          </ProtectedRoute>
+
+          <ProtectedRoute
+            exact
+            path="/FavoritesList"
+          >
+            <FavoritesList />
           </ProtectedRoute>
 
           {/* If none of the other routes matched, we will show a 404. */}
