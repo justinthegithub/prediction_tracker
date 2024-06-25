@@ -19,12 +19,12 @@ import InfoPage from '../InfoPage/InfoPage';
 import LandingPage from '../LandingPage/LandingPage';
 import LoginPage from '../LoginPage/LoginPage';
 import RegisterPage from '../RegisterPage/RegisterPage';
+import MarketOverview from '../MarketOverview/MarketOverview';
 
 import './App.css';
 
 function App() {
   const dispatch = useDispatch();
-
   const user = useSelector(store => store.user);
 
   useEffect(() => {
@@ -109,6 +109,14 @@ function App() {
               <LandingPage />
             }
           </Route>
+
+          {/* Add MarketOverview Route */}
+          <ProtectedRoute
+            exact
+            path="/MarketOverview"
+          >
+            <MarketOverview />
+          </ProtectedRoute>
 
           {/* If none of the other routes matched, we will show a 404. */}
           <Route>
