@@ -30,10 +30,8 @@ function FavoritesList() {
       <ul>
         {favoriteMarkets.map(favorite => (
           <li key={favorite.market_id}>
-            Market ID: {favorite.market_id}, Note: {favorite.note_body}
-           
+            Market ID: {favorite.market_id} - Placeholder - Note: {favorite.note_body}
           </li>
-         
         ))}
       </ul>
     </div>
