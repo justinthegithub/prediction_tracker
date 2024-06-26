@@ -23,6 +23,8 @@ function MarketOverview() {
         {markets.length > 0 ? markets.map(market => (
           <li key={market.id}>
             <h2>{market.name}</h2>
+            <p>Market ID: {market.id}</p>
+            
             {/*
             <p><strong>Short Name:</strong> {market.shortName}</p>
             <a href={market.url} target="_blank" rel="noopener noreferrer">View Market</a>
