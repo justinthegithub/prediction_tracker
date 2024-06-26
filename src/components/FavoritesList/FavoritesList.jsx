@@ -9,6 +9,7 @@ function FavoritesList() {
     axios.get('/api/user')
       .then(response => {
         setUsername(response.data.username);
+        console.log('Username:', response.data.username);
       })
       .catch(error => {
         console.log('Problem with FavoritesList getting username', error);
@@ -17,6 +18,7 @@ function FavoritesList() {
     axios.get('/api/favoriteMarkets')
       .then(response => {
         setFavoriteMarkets(response.data);
+        console.log('Favorite markets:', response.data);
       })
       .catch(error => {
         console.log('Problem with FavoritesList getting favorite markets', error);
@@ -28,9 +30,9 @@ function FavoritesList() {
       <h1>Favorites List</h1>
       <p>{username}'s List</p>
       <ul>
-        {favoriteMarkets.map(favorite => (
-          <li key={favorite.market_id}>
-            Market ID: {favorite.market_id} - Placeholder - Note: {favorite.note_body}
+        {favoriteMarkets.map((favorite, index) => (
+          <li key={`${favorite.market_id}-${index}`}>
+            Market Name: {favorite.market_name} - Note: {favorite.note_body}
           </li>
         ))}
       </ul>

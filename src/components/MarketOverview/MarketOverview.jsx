@@ -7,7 +7,6 @@ function MarketOverview() {
   useEffect(() => {
     axios.get('/api/markets')
       .then(response => {
-        console.log('Raw JSON response:', response.data);
         const marketsData = response.data.markets;
         setMarkets(marketsData);
       })
@@ -15,6 +14,16 @@ function MarketOverview() {
         console.error('Error fetching markets:', error);
       });
   }, []);
+
+  const handleAddToFavorites = (marketId) => {
+    axios.post('/api/favoriteMarkets', { market_id: marketId })
+      .then(response => {
+        console.log('Market added to favorites:', response.data);
+      })
+      .catch(error => {
+        console.error('Error adding market to favorites:', error);
+      });
+  };
 
   return (
     <div>
@@ -24,25 +33,7 @@ function MarketOverview() {
           <li key={market.id}>
             <h2>{market.name}</h2>
             <p>Market ID: {market.id}</p>
-            
-            {/*
-            <p><strong>Short Name:</strong> {market.shortName}</p>
-            <a href={market.url} target="_blank" rel="noopener noreferrer">View Market</a>
-            <ul>
-              {market.contracts.map(contract => (
-                <li key={contract.id}>
-                  <h3>{contract.name}</h3>
-                  <p><strong>Status:</strong> {contract.status}</p>
-                  <p><strong>Last Trade Price:</strong> {contract.lastTradePrice}</p>
-                  <p><strong>Best Buy Yes Cost:</strong> {contract.bestBuyYesCost}</p>
-                  <p><strong>Best Buy No Cost:</strong> {contract.bestBuyNoCost}</p>
-                  <p><strong>Best Sell Yes Cost:</strong> {contract.bestSellYesCost}</p>
-                  <p><strong>Best Sell No Cost:</strong> {contract.bestSellNoCost}</p>
-                  <p><strong>Last Close Price:</strong> {contract.lastClosePrice}</p>
-                </li>
-              ))}
-            </ul>
-            */}
+            <button onClick={() => handleAddToFavorites(market.id)}>Add to Favorites</button>
           </li>
         )) : <p>No markets available</p>}
       </ul>
