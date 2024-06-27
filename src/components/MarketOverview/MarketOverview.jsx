@@ -25,6 +25,16 @@ function MarketOverview() {
       });
   };
 
+  const handleRemoveFromFavorites = (marketId) => {
+    axios.delete(`/api/favoriteMarkets/${marketId}`)
+      .then(() => {
+        setMarkets(markets.filter(market => market.id !== marketId));
+      })
+      .catch(error => {
+        console.error('Error removing market from favorites:', error);
+      });
+  };
+
   return (
     <div>
       <h1>Market Overview</h1>
@@ -34,6 +44,7 @@ function MarketOverview() {
             <h2>{market.name}</h2>
             <p>Market ID: {market.id}</p>
             <button onClick={() => handleAddToFavorites(market.id)}>Add to Favorites</button>
+            <button onClick={() => handleRemoveFromFavorites(market.id)}>Remove from Favorites</button>
           </li>
         )) : <p>No markets available</p>}
       </ul>
@@ -42,3 +53,4 @@ function MarketOverview() {
 }
 
 export default MarketOverview;
+
