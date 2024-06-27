@@ -10,7 +10,6 @@ function FavoritesList() {
     axios.get('/api/user')
       .then(response => {
         setUsername(response.data.username);
-        console.log('Username:', response.data.username);
       })
       .catch(error => {
         console.log('Problem with FavoritesList getting username', error);
@@ -23,7 +22,6 @@ function FavoritesList() {
     axios.get('/api/favoriteMarkets')
       .then(response => {
         setFavoriteMarkets(response.data);
-        console.log('Favorite markets:', response.data);
       })
       .catch(error => {
         console.log('Problem with FavoritesList getting favorite markets', error);
@@ -42,10 +40,10 @@ function FavoritesList() {
     if (note) {
       axios.post('/api/marketNotes', { favorite_market_id: favoriteMarketId, note_body: note })
         .then(response => {
-          console.log('Note added:', response.data);
+          const newNote = response.data.note_body;
           setFavoriteMarkets(prevMarkets => prevMarkets.map(market => {
             if (market.market_id === favoriteMarketId) {
-              return { ...market, notes: [...(market.notes || []), response.data.note_body] };
+              return { ...market, notes: [...(market.notes || []), newNote] };
             }
             return market;
           }));
@@ -64,7 +62,6 @@ function FavoritesList() {
     axios.delete(`/api/favoriteMarkets/${marketId}`)
       .then(() => {
         setFavoriteMarkets(prevFavorites => prevFavorites.filter(market => market.market_id !== marketId));
-        console.log('Market removed from favorites:', marketId);
       })
       .catch(error => {
         console.error('Error removing market from favorites:', error);
