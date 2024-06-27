@@ -12,6 +12,7 @@ const passport = require('./strategies/user.strategy');
 // Route Includes
 const userRouter = require('./routes/user.router');
 const favoriteMarketsRouter = require('./routes/favoriteMarkets.router'); // Import the new router
+const marketNotesRouter = require('./routes/marketNotes.router');
 
 // Express Middleware
 app.use(express.json());
@@ -28,6 +29,10 @@ app.use(passport.session());
 // Routes
 app.use('/api/user', userRouter);
 app.use('/api/favoriteMarkets', favoriteMarketsRouter); 
+app.use('/api', marketNotesRouter);
+
+
+
 app.get('/api/markets', cors(), async (req, res) => {
   try {
     const response = await axios.get('https://www.predictit.org/api/marketdata/all/');

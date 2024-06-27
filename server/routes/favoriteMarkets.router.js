@@ -3,7 +3,7 @@ const pool = require('../modules/pool');
 const router = express.Router();
 const axios = require('axios');
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const queryText = `
     SELECT "Favorite_Markets".market_id, "Market_Notes".note_body 
     FROM "Favorite_Markets"
@@ -11,33 +11,40 @@ router.get('/', (req, res) => {
     WHERE "Favorite_Markets".user_id = $1
   `;
   
-  pool.query(queryText, [req.user.id])
-    .then(result => {
-      const promises = result.rows.map(favorite => {
-        return axios.get(`https://www.predictit.org/api/marketdata/markets/${favorite.market_id}`)
-          .then(marketResponse => {
-            const marketData = marketResponse.data;
-            favorite.market_name = marketData.name || 'Else Unknown Market';
-          })
-          .catch(() => {
-            favorite.market_name = 'Error and so Unknown Market';
-          });
-      });
-
-      Promise.all(promises)
-        .then(() => {
-          console.log('Favorite markets with names:', result.rows);
-          res.send(result.rows);
-        })
-        .catch(error => {
-          console.error('Error processing market data:', error.message);
-          res.status(500).send('Internal Server Error');
-        });
-    })
-    .catch(error => {
-      console.error('Error fetching favorite markets:', error.message);
-      res.status(500).send('Internal Server Error');
+  try {
+    const result = await pool.query(queryText, [req.user.id]);
+    const marketDataPromises = result.rows.map(async (favorite) => {
+      try {
+        const marketResponse = await axios.get(`https://www.predictit.org/api/marketdata/markets/${favorite.market_id}`);
+        const marketData = marketResponse.data;
+        return {
+          ...favorite,
+          market_name: marketData.name || 'Unknown Market',
+          short_name: marketData.shortName || 'Unknown Short Name',
+          image: marketData.image,
+          url: marketData.url,
+          contracts: marketData.contracts || [],
+          status: marketData.status,
+        };
+      } catch (error) {
+        return {
+          ...favorite,
+          market_name: 'Error Fetching Market Name',
+          short_name: 'Error Fetching Short Name',
+          image: null,
+          url: null,
+          contracts: [],
+          status: 'Error',
+        };
+      }
     });
+
+    const marketsWithData = await Promise.all(marketDataPromises);
+    res.send(marketsWithData);
+  } catch (error) {
+    console.error('Error fetching favorite markets:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 router.post('/', (req, res) => {
@@ -75,6 +82,25 @@ router.delete('/:id', (req, res) => {
     })
     .catch(error => {
       console.error('Error deleting favorite market:', error.message);
+      res.status(500).send('Internal Server Error');
+    });
+});
+
+router.post('/marketNotes', (req, res) => {
+  const { favorite_market_id, note_body } = req.body;
+
+  const queryText = `
+    INSERT INTO "Market_Notes" (favorite_market_id, note_body)
+    VALUES ($1, $2)
+    RETURNING *
+  `;
+
+  pool.query(queryText, [favorite_market_id, note_body])
+    .then(result => {
+      res.status(201).json(result.rows[0]);
+    })
+    .catch(error => {
+      console.error('Error adding note:', error.message);
       res.status(500).send('Internal Server Error');
     });
 });
