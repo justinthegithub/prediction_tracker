@@ -4,7 +4,8 @@ import axios from 'axios';
 function FavoritesList() {
   const [username, setUsername] = useState('');
   const [favoriteMarkets, setFavoriteMarkets] = useState([]);
-  const [notes, setNotes] = useState({});
+  const [bankroll, setBankroll] = useState(0);
+  const [newBankroll, setNewBankroll] = useState('');
 
   useEffect(() => {
     axios.get('/api/user')
@@ -16,6 +17,7 @@ function FavoritesList() {
       });
 
     fetchFavoriteMarkets();
+    fetchBankroll();
   }, []);
 
   const fetchFavoriteMarkets = () => {
@@ -28,32 +30,25 @@ function FavoritesList() {
       });
   };
 
-  const handleNoteChange = (marketId, note) => {
-    setNotes(prevNotes => ({
-      ...prevNotes,
-      [marketId]: note,
-    }));
+  const fetchBankroll = () => {
+    axios.get('/api/bankroll')
+      .then(response => {
+        setBankroll(response.data.bankroll);
+      })
+      .catch(error => {
+        console.log('Problem with fetching bankroll', error);
+      });
   };
 
-  const handleAddNote = (favoriteMarketId) => {
-    const note = notes[favoriteMarketId];
-    if (note) {
-      axios.post('/api/marketNotes', { favorite_market_id: favoriteMarketId, note_body: note })
-        .then(response => {
-          const newNote = response.data.note_body;
-          setFavoriteMarkets(prevMarkets => prevMarkets.map(market => {
-            if (market.market_id === favoriteMarketId) {
-              return { ...market, notes: [...(market.notes || []), newNote] };
-            }
-            return market;
-          }));
-          setNotes(prevNotes => ({
-            ...prevNotes,
-            [favoriteMarketId]: '',
-          }));
+  const handleUpdateBankroll = () => {
+    if (newBankroll) {
+      axios.put('/api/bankroll', { bankroll: newBankroll })
+        .then(() => {
+          fetchBankroll();
+          setNewBankroll('');
         })
         .catch(error => {
-          console.log('Problem with adding note', error);
+          console.log('Problem with updating bankroll', error);
         });
     }
   };
@@ -61,35 +56,36 @@ function FavoritesList() {
   const handleRemoveFromFavorites = (marketId) => {
     axios.delete(`/api/favoriteMarkets/${marketId}`)
       .then(() => {
-        setFavoriteMarkets(prevFavorites => prevFavorites.filter(market => market.market_id !== marketId));
+        fetchFavoriteMarkets();
       })
       .catch(error => {
         console.error('Error removing market from favorites:', error);
       });
   };
 
+  const calculateKellyCriterion = (winProbability, odds) => {
+    if (!winProbability || !odds || bankroll <= 0) return 0;
+    return bankroll * ((winProbability * (odds - 1) - (1 - winProbability)) / odds);
+  };
+
   return (
     <div>
       <h1>Favorites List</h1>
       <p>{username}'s List</p>
+      <div>
+        <h2>Bankroll: ${bankroll}</h2>
+        <input
+          type="number"
+          value={newBankroll}
+          onChange={(e) => setNewBankroll(e.target.value)}
+          placeholder="Enter new bankroll amount"
+        />
+        <button onClick={handleUpdateBankroll}>Update Bankroll</button>
+      </div>
       <ul>
         {favoriteMarkets.map((favorite) => (
           <li key={favorite.market_id}>
             <h2>Market Name: {favorite.market_name}</h2>
-            {favorite.notes && favorite.notes.length > 0 && (
-              <ul>
-                {favorite.notes.map((note, index) => (
-                  <li key={index}>{note}</li>
-                ))}
-              </ul>
-            )}
-            <input 
-              type="text"
-              value={notes[favorite.market_id] || ''}
-              onChange={(e) => handleNoteChange(favorite.market_id, e.target.value)}
-              placeholder="Enter new note"
-            />
-            <button onClick={() => handleAddNote(favorite.market_id)}>Add Note</button>
             <button onClick={() => handleRemoveFromFavorites(favorite.market_id)}>Remove from Favorites</button>
             {favorite.contracts && favorite.contracts.length > 0 && (
               <div>
@@ -100,6 +96,7 @@ function FavoritesList() {
                       <p>Name: {contract.name}</p>
                       <p>Best Buy Yes Cost: {contract.bestBuyYesCost}</p>
                       <p>Best Buy No Cost: {contract.bestBuyNoCost}</p>
+                      <p>Proposed Kelly Bet: ${calculateKellyCriterion(contract.winProbability, contract.odds).toFixed(2)}</p>
                     </li>
                   ))}
                 </ul>
