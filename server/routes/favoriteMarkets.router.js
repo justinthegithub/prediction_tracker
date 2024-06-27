@@ -27,6 +27,7 @@ router.get('/', async (req, res) => {
           status: marketData.status,
         };
       } catch (error) {
+        console.error('Error fetching market data:', error.message);
         return {
           ...favorite,
           market_name: 'Error Fetching Market Name',
@@ -92,7 +93,7 @@ router.post('/marketNotes', (req, res) => {
   const queryText = `
     INSERT INTO "Market_Notes" (favorite_market_id, note_body)
     VALUES ($1, $2)
-    RETURNING *
+    RETURNING note_body
   `;
 
   pool.query(queryText, [favorite_market_id, note_body])
