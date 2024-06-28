@@ -2,7 +2,7 @@ const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
 
-router.post('/', async (req, res) => {  // Ensure the path is '/'
+router.post('/', async (req, res) => {  
   const { favorite_market_id, note_body } = req.body;
 
   const checkNoteQuery = `
