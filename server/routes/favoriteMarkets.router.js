@@ -3,6 +3,28 @@ const pool = require('../modules/pool');
 const router = express.Router();
 const axios = require('axios');
 
+// POST route for adding favorite markets
+router.post('/', async (req, res) => {
+  const { market_id } = req.body;
+  const user_id = req.user.id; // Ensure req.user is populated
+
+  if (!market_id || !user_id) {
+    return res.status(400).send('Bad Request');
+  }
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO "Favorite_Markets" (user_id, market_id) VALUES ($1, $2) RETURNING *',
+      [user_id, market_id]
+    );
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error adding market to favorites:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// GET route for fetching favorite markets
 router.get('/', async (req, res) => {
   const queryText = `
     SELECT "Favorite_Markets".market_id
