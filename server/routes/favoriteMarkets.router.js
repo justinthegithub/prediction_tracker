@@ -21,8 +21,8 @@ router.get('/', async (req, res) => {
           market_name: marketData.name || 'Unknown Market',
           contracts: marketData.contracts.map(contract => ({
             ...contract,
-            winProbability: calculateWinProbability(contract), // Ensure winProbability is calculated or fetched
-            odds: contract.bestBuyYesCost ? 1 / contract.bestBuyYesCost : null, // Example calculation of odds
+            winProbability: contract.bestBuyYesCost, 
+            odds: contract.bestBuyYesCost ? 1 / contract.bestBuyYesCost : null,
           })) || [],
         };
       } catch (error) {
@@ -42,11 +42,5 @@ router.get('/', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
-// Example function to calculate win probability (should be adjusted based on your actual logic)
-const calculateWinProbability = (contract) => {
-  // Example logic to calculate win probability
-  return contract.bestBuyYesCost ? 1 / contract.bestBuyYesCost : 0;
-};
 
 module.exports = router;

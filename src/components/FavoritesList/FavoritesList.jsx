@@ -64,8 +64,18 @@ function FavoritesList() {
   };
 
   const calculateKellyCriterion = (winProbability, odds) => {
-    if (!winProbability || !odds || bankroll <= 0) return 0;
-    return bankroll * ((winProbability * (odds - 1) - (1 - winProbability)) / odds);
+    if (!winProbability || !odds || bankroll <= 0) return "NOT A KELLY BET";
+    const fStar = (winProbability * (odds - 1) - (1 - winProbability)) / odds;
+    const kellyBet = bankroll * fStar;
+    if (isNaN(kellyBet)) return "NOT A KELLY BET";
+    return kellyBet;
+  };
+
+  const displayKellyBet = (kellyBet) => {
+    if (typeof kellyBet === 'string' || kellyBet < 0) {
+      return `${kellyBet} (NOT A KELLY BET)`;
+    }
+    return `$${kellyBet.toFixed(2)}`;
   };
 
   return (
@@ -91,14 +101,23 @@ function FavoritesList() {
               <div>
                 <h3>Contracts</h3>
                 <ul>
-                  {favorite.contracts.map((contract) => (
-                    <li key={contract.id}>
-                      <p>Name: {contract.name}</p>
-                      <p>Best Buy Yes Cost: {contract.bestBuyYesCost}</p>
-                      <p>Best Buy No Cost: {contract.bestBuyNoCost}</p>
-                      <p>Proposed Kelly Bet: ${calculateKellyCriterion(contract.winProbability, contract.odds).toFixed(2)}</p>
-                    </li>
-                  ))}
+                  {favorite.contracts.map((contract) => {
+                    const winProbabilityYes = contract.bestBuyYesCost; // Assuming this value is a proxy for probability
+                    const oddsYes = 1 / contract.bestBuyYesCost;
+                    const winProbabilityNo = 1 - contract.bestBuyYesCost;
+                    const oddsNo = 1 / contract.bestBuyNoCost;
+
+                    const kellyBetYes = calculateKellyCriterion(winProbabilityYes, oddsYes);
+                    const kellyBetNo = calculateKellyCriterion(winProbabilityNo, oddsNo);
+
+                    return (
+                      <li key={contract.id}>
+                        <p>Name: {contract.name}</p>
+                        <p>Best Buy Yes Cost: {contract.bestBuyYesCost} (Kelly Bet: {displayKellyBet(kellyBetYes)})</p>
+                        <p>Best Buy No Cost: {contract.bestBuyNoCost} (Kelly Bet: {displayKellyBet(kellyBetNo)})</p>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
