@@ -6,7 +6,7 @@ function FavoritesList() {
   const [favoriteMarkets, setFavoriteMarkets] = useState([]);
   const [bankroll, setBankroll] = useState(0);
   const [newBankroll, setNewBankroll] = useState('');
-  const [betPercentage, setBetPercentage] = useState(5); // Default to 5%
+  const [betPercentage, setBetPercentage] = useState(3); // Default to 3%
 
   useEffect(() => {
     axios.get('/api/user')

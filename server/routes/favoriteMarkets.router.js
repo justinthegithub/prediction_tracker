@@ -65,4 +65,30 @@ router.get('/', async (req, res) => {
   }
 });
 
+// DELETE route for removing a favorite market
+router.delete('/:marketId', async (req, res) => {
+  const { marketId } = req.params;
+  const user_id = req.user.id; // Ensure req.user is populated
+
+  if (!marketId || !user_id) {
+    return res.status(400).send('Bad Request');
+  }
+
+  try {
+    const result = await pool.query(
+      'DELETE FROM "Favorite_Markets" WHERE user_id = $1 AND market_id = $2 RETURNING *',
+      [user_id, marketId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).send('Market not found in favorites');
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error removing market from favorites:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 module.exports = router;
