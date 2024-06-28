@@ -2,41 +2,48 @@ const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const queryText = 'SELECT * FROM "User_Bankroll" WHERE "user_id" = $1';
-  try {
-    const result = await pool.query(queryText, [req.user.id]);
-    if (result.rows.length > 0) {
-      res.json(result.rows[0]);
-    } else {
-      res.status(404).send('Bankroll not found');
-    }
-  } catch (error) {
-    console.error('Error fetching bankroll:', error.message);
-    res.status(500).send('Internal Server Error');
-  }
+
+//Read
+router.get('/', (req, res) => {
+  const queryText = `SELECT * FROM "User_Bankroll" WHERE "user_id" = $1`;
+  pool.query(queryText, [req.user.id])
+    .then(result => {
+      if (result.rows.length > 0) {
+        res.json(result.rows[0]);
+      } else {
+        res.status(404).send('No record of a bankroll');
+      }
+    })
+    .catch(error => {
+      console.log('Problem fetching bankroll from bankroll.router.js', error.message);
+      res.status(500).send('Internal Server Error');
+    });
 });
 
-router.post('/', async (req, res) => {
+//create
+
+router.post('/', (req, res) => {
   const { bankroll } = req.body;
   const queryText = `
     INSERT INTO "User_Bankroll" (user_id, bankroll)
     VALUES ($1, $2)
     RETURNING id
   `;
-  try {
-    const result = await pool.query(queryText, [req.user.id, bankroll]);
-    res.status(201).json({ bankroll_id: result.rows[0].id });
-  } catch (error) {
-    console.error('Error adding bankroll:', error.message);
-    res.status(500).send('Internal Server Error');
-  }
+  pool.query(queryText, [req.user.id, bankroll])
+    .then(result => {
+      res.status(201).json({ bankroll_id: result.rows[0].id });
+    })
+    .catch(error => {
+      console.log('Problem adding bankroll from bankroll.router.js', error.message);
+      res.status(500).send();
+    });
 });
 
-router.put('/', async (req, res) => {
+//UPDATE
+router.put('/', (req, res) => {
   const { bankroll } = req.body;
 
-  const checkQuery = 'SELECT * FROM "User_Bankroll" WHERE "user_id" = $1';
+  const queryCheck = `SELECT * FROM "User_Bankroll" WHERE "user_id" = $1`;
   const insertQuery = `
     INSERT INTO "User_Bankroll" (user_id, bankroll)
     VALUES ($1, $2)
@@ -47,21 +54,25 @@ router.put('/', async (req, res) => {
     RETURNING id
   `;
 
-  try {
-    const checkResult = await pool.query(checkQuery, [req.user.id]);
+//If bankroll exists, update
+//else insert banrkoll 
 
-    let result;
-    if (checkResult.rows.length > 0) {
-      result = await pool.query(updateQuery, [req.user.id, bankroll]);
-    } else {
-      result = await pool.query(insertQuery, [req.user.id, bankroll]);
-    }
 
-    res.json({ bankroll_id: result.rows[0].id });
-  } catch (error) {
-    console.error('Error updating bankroll:', error.message);
-    res.status(500).send('Internal Server Error');
-  }
+  pool.query(queryCheck, [req.user.id])
+    .then(checkResult => {
+      if (checkResult.rows.length > 0) {
+        return pool.query(updateQuery, [req.user.id, bankroll]);
+      } else {
+        return pool.query(insertQuery, [req.user.id, bankroll]);
+      }
+    })
+    .then(result => {
+      res.json({ bankroll_id: result.rows[0].id });
+    })
+    .catch(error => {
+      console.log('Problem updating bankroll from bankroll.router.js', error.message);
+      res.status(500).send('Internal Server Error');
+    });
 });
 
 module.exports = router;
