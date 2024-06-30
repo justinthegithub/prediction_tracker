@@ -81,7 +81,7 @@ router.get('/', (req, res) => {
 
 router.delete('/:marketId', (req, res) => {
   const { marketId } = req.params;
-  const user_id = req.user.id; 
+  const user_id = req.user.id; // Ensure req.user is populated
 
   if (!marketId || !user_id) {
     return res.status(400).send('Bad Request');

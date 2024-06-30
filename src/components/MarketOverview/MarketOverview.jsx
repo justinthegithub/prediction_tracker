@@ -7,8 +7,8 @@ function MarketOverview() {
   useEffect(() => {
     axios.get('/api/markets')
       .then(response => {
-        const marketsData = response.data.markets;
-        setMarkets(marketsData);
+        const localMarketsData = response.data.markets;
+        setMarkets(localMarketsData);
       })
       .catch(error => {
         console.error('Error fetching markets:', error);
@@ -26,14 +26,19 @@ function MarketOverview() {
   };
 
   return (
-    <div>
-      <h1>Market Overview</h1>
-      <ul id="market-list">
+    <div className="container">
+      <h1 className="my-4">Market Overview</h1>
+      <ul className="list-group">
         {markets.length > 0 ? markets.map(market => (
-          <li key={market.id}>
+          <li key={market.id} className="list-group-item">
             <h2>{market.name}</h2>
             <p>Market ID: {market.id}</p>
-            <button onClick={() => handleAddToFavorites(market.id)}>Add to Favorites</button>
+            <button
+              className="btn btn-primary"
+              onClick={() => handleAddToFavorites(market.id)}
+            >
+              Add to Favorites
+            </button>
           </li>
         )) : <p>No markets available</p>}
       </ul>
