@@ -2,53 +2,53 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 function MarketOverview() {
-  const [databaseMarkets, setDatabaseMarkets] = useState([]);
-  const [apiMarkets, setApiMarkets] = useState([]);
-  const [showApiMarkets, setShowApiMarkets] = useState(false);
-  const [showDatabaseMarkets, setShowDatabaseMarkets] = useState(true); // default to true
+const [databaseMarkets, setDatabaseMarkets] = useState([]);
+const [apiMarkets, setApiMarkets] = useState([]);
+const [showApiMarkets, setShowApiMarkets] = useState(false);
+const [showDatabaseMarkets, setShowDatabaseMarkets] = useState(true);
 
-  useEffect(() => {
-    if (showDatabaseMarkets) {
-      axios.get('/api/markets')
-        .then(response => {
-          setDatabaseMarkets(response.data.markets);
-        })
-        .catch(error => {
-          console.error('Error fetching markets from database:', error);
-          setDatabaseMarkets([]);
-        });
-    }
-  }, [showDatabaseMarkets]);
-
-  const fetchApiMarkets = () => {
-    if (!showApiMarkets) {
-      axios.get('https://manifold.markets/api/v0/markets')
-        .then(response => {
-          setApiMarkets(response.data);
-          setShowApiMarkets(true);
-        })
-        .catch(error => {
-          console.error('Error fetching markets from Manifold API:', error);
-          setApiMarkets([]);
-        });
-    } else {
-      setShowApiMarkets(false);
-    }
-  };
-
-  const handleAddToFavorites = (marketId) => {
-    axios.post('/api/favoriteMarkets', { market_id: marketId })
+useEffect(() => {
+  if (showDatabaseMarkets) {
+    axios.get('/api/markets')
       .then(response => {
-        console.log('Market added to favorites:', response.data);
+        setDatabaseMarkets(response.data.markets);
       })
       .catch(error => {
-        console.error('Error adding market to favorites:', error);
+        console.log('MarketOverview.jsx is not able to fetch market data', error);
+        setDatabaseMarkets([]);
       });
-  };
+  }
+}, [showDatabaseMarkets]);
 
-  const toggleShowDatabaseMarkets = () => {
-    setShowDatabaseMarkets(prevShowDatabaseMarkets => !prevShowDatabaseMarkets);
-  };
+const fetchApiMarkets = () => {
+  if (!showApiMarkets) {
+    axios.get('https://manifold.markets/api/v0/markets')
+      .then(response => {
+        setApiMarkets(response.data);
+        setShowApiMarkets(true);
+      })
+      .catch(error => {
+        console.log('MarketOverview.jsx is not able to fetch market data from Manifold Api', error);
+        setApiMarkets([]);
+      });
+  } else {
+    setShowApiMarkets(false);
+  }
+}
+
+const handleAddToFavorites = (marketId) => {
+  axios.post('/api/favoriteMarkets', { market_id: marketId })
+    .then(response => {
+      console.log('Markets added to favorites:', response.data);
+    })
+    .catch(error => {
+      console.log('MarketOverview.jsx was not able to add market to favorites', error);
+    });
+}
+
+const toggleShowDatabaseMarkets = () => {
+  setShowDatabaseMarkets(prevShowDatabaseMarkets => !prevShowDatabaseMarkets);
+}
 
   return (
     <div className="container">
@@ -82,14 +82,18 @@ function MarketOverview() {
           </ul>
         </>
       )}
-      
+
       {showApiMarkets && (
         <>
           <h2>Manifold Markets</h2>
           <ul className="list-group">
             {apiMarkets.length > 0 ? apiMarkets.map(market => (
               <li key={market.id} className="list-group-item">
-                <h3><a href={`https://manifold.markets/${market.creatorUsername}/${market.slug}`} target="_blank" rel="noopener noreferrer">{market.question}</a></h3>
+                <h3>
+                  <a href={`https://manifold.markets/${market.creatorUsername}/${market.slug}`} target="_blank" rel="noopener noreferrer">
+                    {market.question}
+                  </a>
+                </h3>
               </li>
             )) : <p>No markets available</p>}
           </ul>
