@@ -3,6 +3,14 @@ const pool = require('../modules/pool');
 const router = express.Router();
 const axios = require('axios');
 
+
+
+//POST: take market_id from req.body 
+//take user_id from user
+//require both 
+//insert user_id and market_id into Favorite_Market. 
+
+
 router.post('/', (req, res) => {
   const { market_id } = req.body;
   const user_id = req.user.id;
@@ -24,6 +32,15 @@ router.post('/', (req, res) => {
     });
 });
 
+//GET
+//Markets, MarketData, Contract
+
+//queryText Select market_id from Favorite_Markets table. 
+//declare marketsWithData
+//
+
+
+
 router.get('/', (req, res) => {
   const queryText = `
     SELECT "Favorite_Markets".market_id
@@ -35,6 +52,8 @@ router.get('/', (req, res) => {
     .then(result => {
       let marketsWithData = [];
       let fetchPromises = [];
+
+      //add markets to marketsWithData array.  
 
       result.rows.forEach(favorite => {
         let fetchPromise = axios.get(`https://www.predictit.org/api/marketdata/markets/${favorite.market_id}`)
@@ -60,7 +79,7 @@ router.get('/', (req, res) => {
           });
         fetchPromises.push(fetchPromise);
       });
-
+//Promise.all prevents partial display of data
       Promise.all(fetchPromises)
         .then(() => {
           res.send(marketsWithData);
@@ -75,6 +94,17 @@ router.get('/', (req, res) => {
       res.status(500).send('Internal Server Error');
     });
 });
+
+
+
+//DELETE
+//take user_id from authenticated user
+//take marketId from req.
+//require both
+
+
+
+
 
 router.delete('/all', (req, res) => {
   const user_id = req.user.id;

@@ -2,53 +2,53 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 function MarketOverview() {
-const [databaseMarkets, setDatabaseMarkets] = useState([]);
-const [apiMarkets, setApiMarkets] = useState([]);
-const [showApiMarkets, setShowApiMarkets] = useState(false);
-const [showDatabaseMarkets, setShowDatabaseMarkets] = useState(true);
+  const [databaseMarkets, setDatabaseMarkets] = useState([]);
+  const [apiMarkets, setApiMarkets] = useState([]);
+  const [showApiMarkets, setShowApiMarkets] = useState(false);
+  const [showDatabaseMarkets, setShowDatabaseMarkets] = useState(true);
 
-useEffect(() => {
-  if (showDatabaseMarkets) {
-    axios.get('/api/markets')
+  useEffect(() => {
+    if (showDatabaseMarkets) {
+      axios.get('/api/markets')
+        .then(response => {
+          setDatabaseMarkets(response.data.markets);
+        })
+        .catch(error => {
+          console.log('MarketOverview.jsx is not able to fetch market data', error);
+          setDatabaseMarkets([]);
+        });
+    }
+  }, [showDatabaseMarkets]);
+
+  const fetchApiMarkets = () => {
+    if (!showApiMarkets) {
+      axios.get('https://manifold.markets/api/v0/markets')
+        .then(response => {
+          setApiMarkets(response.data);
+          setShowApiMarkets(true);
+        })
+        .catch(error => {
+          console.log('MarketOverview.jsx is not able to fetch market data from Manifold Api', error);
+          setApiMarkets([]);
+        });
+    } else {
+      setShowApiMarkets(false);
+    }
+  }
+
+  const handleAddToFavorites = (marketId) => {
+    axios.post('/api/favoriteMarkets', { market_id: marketId })
       .then(response => {
-        setDatabaseMarkets(response.data.markets);
+        console.log('Markets added to favorites:', response.data);
       })
       .catch(error => {
-        console.log('MarketOverview.jsx is not able to fetch market data', error);
-        setDatabaseMarkets([]);
+        console.log('MarketOverview.jsx was not able to add market to favorites', error);
       });
   }
-}, [showDatabaseMarkets]);
 
-const fetchApiMarkets = () => {
-  if (!showApiMarkets) {
-    axios.get('https://manifold.markets/api/v0/markets')
-      .then(response => {
-        setApiMarkets(response.data);
-        setShowApiMarkets(true);
-      })
-      .catch(error => {
-        console.log('MarketOverview.jsx is not able to fetch market data from Manifold Api', error);
-        setApiMarkets([]);
-      });
-  } else {
-    setShowApiMarkets(false);
+  const toggleShowDatabaseMarkets = () => {
+    setShowDatabaseMarkets(prevShowDatabaseMarkets => !prevShowDatabaseMarkets);
   }
-}
-
-const handleAddToFavorites = (marketId) => {
-  axios.post('/api/favoriteMarkets', { market_id: marketId })
-    .then(response => {
-      console.log('Markets added to favorites:', response.data);
-    })
-    .catch(error => {
-      console.log('MarketOverview.jsx was not able to add market to favorites', error);
-    });
-}
-
-const toggleShowDatabaseMarkets = () => {
-  setShowDatabaseMarkets(prevShowDatabaseMarkets => !prevShowDatabaseMarkets);
-}
 
   return (
     <div className="container">

@@ -104,7 +104,7 @@ function FavoritesList() {
       <button className="btn btn-danger" onClick={handleClearAllFavorites}>Clear All Favorites</button>
       <ul>
         {favoriteMarkets.map((favorite) => (
-          <li key={favorite.market_id}>
+          <li key={`${favorite.market_id}-${favorite.user_id}`}>
             <h2>Market Name: {favorite.market_name}</h2>
             <button className="btn btn-secondary mr-2" onClick={() => handleRemoveFromFavorites(favorite.market_id)}>Remove from Favorites</button>
             {favorite.contracts && favorite.contracts.length > 0 && (
@@ -116,7 +116,7 @@ function FavoritesList() {
                     const betAmountNo = fixedFractionalBet(betPercentage);
 
                     return (
-                      <li key={contract.id}>
+                      <li key={`${contract.id}-${favorite.market_id}`}>
                         <p>Name: {contract.name}</p>
                         <p>Best Buy Yes Cost: {contract.bestBuyYesCost} (Fixed Fraction Bet: ${betAmountYes.toFixed(2)})</p>
                         <p>Best Buy No Cost: {contract.bestBuyNoCost} (Fixed Fraction Bet: ${betAmountNo.toFixed(2)})</p>
