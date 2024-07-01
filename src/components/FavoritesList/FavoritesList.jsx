@@ -64,6 +64,16 @@ function FavoritesList() {
       });
   };
 
+  const handleClearAllFavorites = () => {
+    axios.delete('/api/favoriteMarkets/all')
+      .then(() => {
+        fetchFavoriteMarkets();
+      })
+      .catch(error => {
+        console.error('Error clearing all favorites:', error);
+      });
+  };
+
   const fixedFractionalBet = (percentage) => {
     return bankroll * (percentage / 100);
   };
@@ -80,7 +90,7 @@ function FavoritesList() {
           onChange={(e) => setNewBankroll(e.target.value)}
           placeholder="Enter new bankroll amount"
         />
-        <button onClick={handleUpdateBankroll}>Update Bankroll</button>
+        <button className="btn btn-secondary mr-2" onClick={handleUpdateBankroll}>Update Bankroll</button>
       </div>
       <div>
         <h2>Bet Percentage: </h2>
@@ -91,11 +101,12 @@ function FavoritesList() {
           placeholder="Enter bet percentage"
         />
       </div>
+      <button className="btn btn-danger" onClick={handleClearAllFavorites}>Clear All Favorites</button>
       <ul>
         {favoriteMarkets.map((favorite) => (
           <li key={favorite.market_id}>
             <h2>Market Name: {favorite.market_name}</h2>
-            <button onClick={() => handleRemoveFromFavorites(favorite.market_id)}>Remove from Favorites</button>
+            <button className="btn btn-secondary mr-2" onClick={() => handleRemoveFromFavorites(favorite.market_id)}>Remove from Favorites</button>
             {favorite.contracts && favorite.contracts.length > 0 && (
               <div>
                 <h3>Contracts</h3>
