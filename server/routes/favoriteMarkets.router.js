@@ -1,16 +1,12 @@
 const express = require('express');
-const pool = require('../modules/pool');
-const router = express.Router();
 const axios = require('axios');
+const router = express.Router();
+const pool = require('../modules/pool.js');
 
-
-
-//POST: take market_id from req.body 
-//take user_id from user
-//require both 
-//insert user_id and market_id into Favorite_Market. 
-
-
+// POST: take market_id from req.body 
+// take user_id from user
+// require both 
+// insert user_id and market_id into Favorite_Market. 
 router.post('/', (req, res) => {
   const { market_id } = req.body;
   const user_id = req.user.id;
@@ -32,80 +28,62 @@ router.post('/', (req, res) => {
     });
 });
 
-//GET
-//Markets, MarketData, Contract
+// GET
+// Markets, MarketData, Contract
 
-//queryText Select market_id from Favorite_Markets table. 
-//declare marketsWithData
-//
-
-
-
-router.get('/', (req, res) => {
+// queryText Select market_id from Favorite_Markets table. 
+// declare marketsWithData
+router.get('/', async (req, res) => {
   const queryText = `
     SELECT "Favorite_Markets".market_id
     FROM "Favorite_Markets"
     WHERE "Favorite_Markets".user_id = $1
   `;
 
-  pool.query(queryText, [req.user.id])
-    .then(result => {
-      let marketsWithData = [];
-      let fetchPromises = [];
+  try {
+    const result = await pool.query(queryText, [req.user.id]);
+    const favoriteMarkets = result.rows;
+    let marketsWithData = [];
 
-      //add markets to marketsWithData array.  
+    // add markets to marketsWithData array.  
+    for (let favorite of favoriteMarkets) {
+      try {
+        const response = await axios.get(`https://www.predictit.org/api/marketdata/markets/${favorite.market_id}`);
+        const marketData = response.data;
 
-      result.rows.forEach(favorite => {
-        let fetchPromise = axios.get(`https://www.predictit.org/api/marketdata/markets/${favorite.market_id}`)
-          .then(marketResponse => {
-            const marketData = marketResponse.data;
-            marketsWithData.push({
-              ...favorite,
-              market_name: marketData.name || 'Unknown Market',
-              contracts: marketData.contracts.map(contract => ({
-                ...contract,
-                winProbability: contract.bestBuyYesCost,
-                odds: contract.bestBuyYesCost ? 1 / contract.bestBuyYesCost : null,
-              })) || [],
-            });
-          })
-          .catch(error => {
-            console.error('Error fetching market data:', error.message);
-            marketsWithData.push({
-              ...favorite,
-              market_name: 'Error Fetching Market Name',
-              contracts: [],
-            });
-          });
-        fetchPromises.push(fetchPromise);
-      });
-//Promise.all prevents partial display of data
-      Promise.all(fetchPromises)
-        .then(() => {
-          res.send(marketsWithData);
-        })
-        .catch(error => {
-          console.error('Error fetching favorite markets:', error.message);
-          res.status(500).send('Internal Server Error');
+        marketsWithData.push({
+          market_id: favorite.market_id,
+          market_name: marketData.name || 'Unknown Market',
+          contracts: marketData.contracts.map(contract => ({
+            id: contract.id,
+            name: contract.name,
+            bestBuyYesCost: contract.bestBuyYesCost,
+            bestBuyNoCost: contract.bestBuyNoCost,
+            winProbability: contract.bestBuyYesCost,
+            odds: contract.bestBuyYesCost ? 1 / contract.bestBuyYesCost : null,
+          })) || [],
         });
-    })
-    .catch(error => {
-      console.error('Error fetching favorite markets:', error.message);
-      res.status(500).send('Internal Server Error');
-    });
+      } catch (error) {
+        console.error(`Error fetching market data for market ID ${favorite.market_id}:`, error.message);
+        marketsWithData.push({
+          market_id: favorite.market_id,
+          market_name: 'Error Fetching Market Name',
+          contracts: [],
+        });
+      }
+    }
+
+    res.send(marketsWithData);
+  } catch (error) {
+    console.error('Error fetching favorite markets:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-
-
-//DELETE
-//take user_id from authenticated user
-//take marketId from req.
-//require both
-
-
-
-
-
+// DELETE
+// take user_id from authenticated user
+// take marketId from req.
+// require both
 router.delete('/all', (req, res) => {
   const user_id = req.user.id;
 
