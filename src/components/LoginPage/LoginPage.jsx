@@ -2,6 +2,7 @@ import React from 'react';
 import LoginForm from '../LoginForm/LoginForm';
 import { useHistory } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './LoginPage.css';
 
 function LoginPage() {
   const history = useHistory();
@@ -20,19 +21,19 @@ function LoginPage() {
 
       <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel" style={{ margin: '20px 0' }}>
         <div className="carousel-inner">
-          <div className="carousel-item active">
+          <div className="carousel-item active noticia-text-regular">
             <div className="d-block w-100" style={{ ...carouselItemStyle, backgroundColor: '#e9ecef' }}>
-              <h3>Will a Human Travel to Mars before 2029?</h3>
+              <h1>Will a Human Travel to Mars before 2029?</h1>
             </div>
           </div>
-          <div className="carousel-item">
+          <div className="carousel-item noticia-text-regular">
             <div className="d-block w-100" style={{ ...carouselItemStyle, backgroundColor: '#dee2e6' }}>
-              <h3>Will the United States Have a Female President by Dec. 31 2024?</h3>
+              <h1>Will the United States Have a Female President by Dec. 31 2024?</h1>
             </div>
           </div>
-          <div className="carousel-item">
+          <div className="carousel-item noticia-text-regular">
             <div className="d-block w-100" style={{ ...carouselItemStyle, backgroundColor: '#ced4da' }}>
-              <h3>Will a General Artificial Intelligence System Try to Avoid Being Shutdown by 2027?</h3>
+              <h1>Will a General Artificial Intelligence System Try to Prevent Itself from Being Shutdown by 2027?</h1>
             </div>
           </div>
         </div>
