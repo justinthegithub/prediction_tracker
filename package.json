@@ -6,8 +6,10 @@
     "node": ">=18.x"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.3",
     "connect-pg-simple": "^9.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

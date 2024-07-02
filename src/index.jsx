@@ -5,6 +5,10 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 
 import App from './components/App/App';
+// index.js or App.js
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('react-root'));

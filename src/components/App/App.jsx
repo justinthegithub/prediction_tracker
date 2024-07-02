@@ -22,6 +22,11 @@ import RegisterPage from '../RegisterPage/RegisterPage';
 import MarketOverview from '../MarketOverview/MarketOverview';
 import FavoritesList from '../FavoritesList/FavoritesList'; // Added import
 
+// index.js or App.js
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
+
 import './App.css';
 
 function App() {

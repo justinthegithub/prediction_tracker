@@ -34,7 +34,7 @@ function MarketOverview() {
     } else {
       setShowApiMarkets(false);
     }
-  }
+  };
 
   const handleAddToFavorites = (marketId) => {
     axios.post('/api/favoriteMarkets', { market_id: marketId })
@@ -44,11 +44,11 @@ function MarketOverview() {
       .catch(error => {
         console.log('MarketOverview.jsx was not able to add market to favorites', error);
       });
-  }
+  };
 
   const toggleShowDatabaseMarkets = () => {
     setShowDatabaseMarkets(prevShowDatabaseMarkets => !prevShowDatabaseMarkets);
-  }
+  };
 
   return (
     <div className="container">
