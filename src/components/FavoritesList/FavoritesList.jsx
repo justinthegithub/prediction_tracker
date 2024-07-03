@@ -6,7 +6,8 @@ function FavoritesList() {
   const [favoriteMarkets, setFavoriteMarkets] = useState([]);
   const [bankroll, setBankroll] = useState(5);
   const [newBankroll, setNewBankroll] = useState('');
-  const [betPercentage, setBetPercentage] = useState(3); 
+  const [betPercentage, setBetPercentage] = useState(3); // Percentage of bankroll to bet
+
   useEffect(() => {
     axios.get('/api/user')
       .then(response => {
@@ -77,8 +78,10 @@ function FavoritesList() {
     return bankroll * (percentage / 100);
   };
 
-  const betAmountYes = fixedFractionalBet(betPercentage).toFixed(2);
-  const betAmountNo = fixedFractionalBet(betPercentage).toFixed(2);
+  const kellyBet = (probability, odds) => {
+    const kellyFraction = ((probability * (odds + 1) - 1) / odds);
+    return bankroll * kellyFraction * (betPercentage / 100);
+  };
 
   const tableCellStyle = {
     padding: '8px',
@@ -108,7 +111,7 @@ function FavoritesList() {
           placeholder="Enter bet percentage"
           className="form-control"
         />
-        <p>Fixed Fraction Bet: Yes - ${betAmountYes}, No - ${betAmountNo}</p>
+        <p>Fixed Fraction Bet: ${fixedFractionalBet(betPercentage).toFixed(2)}</p>
       </div>
       <button className="btn btn-danger mb-3" onClick={handleClearAllFavorites}>Clear All Favorites</button>
       <ul className="list-group">
@@ -125,16 +128,28 @@ function FavoritesList() {
                     <th style={tableCellStyle}>Contract Name</th>
                     <th style={tableCellStyle}>Yes </th>
                     <th style={tableCellStyle}>No </th>
+                    <th style={tableCellStyle}>Kelly Bet (Yes)</th>
+                    <th style={tableCellStyle}>Kelly Bet (No)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {favorite.contracts.map((contract) => (
-                    <tr key={`${contract.id}-${favorite.market_id}`}>
-                      <td style={tableCellStyle}>{contract.name}</td>
-                      <td style={tableCellStyle}>{contract.bestBuyYesCost}</td>
-                      <td style={tableCellStyle}>{contract.bestBuyNoCost}</td>
-                    </tr>
-                  ))}
+                  {favorite.contracts.map((contract) => {
+                    const yesProbability = contract.bestBuyYesCost / 100;
+                    const noProbability = contract.bestBuyNoCost / 100;
+                    const odds = 1; // Assuming even odds for simplicity
+                    const kellyBetYes = kellyBet(yesProbability, odds).toFixed(2);
+                    const kellyBetNo = kellyBet(noProbability, odds).toFixed(2);
+
+                    return (
+                      <tr key={`${contract.id}-${favorite.market_id}`}>
+                        <td style={tableCellStyle}>{contract.name}</td>
+                        <td style={tableCellStyle}>{contract.bestBuyYesCost}</td>
+                        <td style={tableCellStyle}>{contract.bestBuyNoCost}</td>
+                        <td style={tableCellStyle}>${kellyBetYes}</td>
+                        <td style={tableCellStyle}>${kellyBetNo}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
