@@ -80,6 +80,26 @@ router.get('/', async (req, res) => {
   }
 });
 
+// DELETE: Reset bankroll to zero
+router.delete('/bankroll', (req, res) => {
+  const user_id = req.user.id;
+
+  if (!user_id) {
+    return res.status(400).send('User ID is required');
+  }
+
+  const queryText = 'UPDATE "Bankroll" SET bankroll = 0 WHERE user_id=$1';
+
+  pool.query(queryText, [user_id])
+    .then(() => {
+      res.status(204).send('Bankroll reset to zero');
+    })
+    .catch(error => {
+      console.error('Error resetting bankroll:', error.message);
+      res.status(500).send('Internal Server Error');
+    });
+});
+
 // DELETE
 // take user_id from authenticated user
 // take marketId from req.

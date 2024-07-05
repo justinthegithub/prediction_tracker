@@ -4,9 +4,10 @@ import axios from 'axios';
 function FavoritesList() {
   const [username, setUsername] = useState('');
   const [favoriteMarkets, setFavoriteMarkets] = useState([]);
-  const [bankroll, setBankroll] = useState(5);
+  const [bankroll, setBankroll] = useState(5);  
   const [newBankroll, setNewBankroll] = useState('');
-  const [betPercentage, setBetPercentage] = useState(3); // Percentage of bankroll to bet
+  const [betPercentage, setBetPercentage] = useState(3); 
+  const [kellyAdjustment, setKellyAdjustment] = useState(0.00); 
 
   useEffect(() => {
     axios.get('/api/user')
@@ -74,13 +75,32 @@ function FavoritesList() {
       });
   };
 
+
+  //This percentage will be the same for all markets. 
   const fixedFractionalBet = (percentage) => {
     return bankroll * (percentage / 100);
   };
 
+//This percentage should differ for each market according to price.  When yes/no probabilities don't add up to a 100 
+//they should not be equal.  
+
   const kellyBet = (probability, odds) => {
-    const kellyFraction = ((probability * (odds + 1) - 1) / odds);
-    return bankroll * kellyFraction * (betPercentage / 100);
+    if (probability <= 0 || probability >= 1 || odds <= 0) {
+      return 0;
+    }
+    const kellyFraction = ((probability * (odds + 1) - 1) / odds) + kellyAdjustment;
+    const scaledKelly = bankroll * kellyFraction * (betPercentage / 100);
+    return Math.max(scaledKelly, 0); 
+  };
+
+
+  //Treats the price as the probability
+  //To improve accuracy 
+  const calculateOdds = (price) => {
+    if (price <= 0 || price >= 1) {
+      return 0;
+    }
+    return (1 / price) - 1;
   };
 
   const tableCellStyle = {
@@ -113,6 +133,16 @@ function FavoritesList() {
         />
         <p>Fixed Fraction Bet: ${fixedFractionalBet(betPercentage).toFixed(2)}</p>
       </div>
+      <div className="mb-3">
+        <h2>Kelly Adjustment:</h2>
+        <input
+          type="number"
+          value={kellyAdjustment}
+          onChange={(e) => setKellyAdjustment(parseFloat(e.target.value))}
+          placeholder="Enter Kelly adjustment"
+          className="form-control"
+        />
+      </div>
       <button className="btn btn-danger mb-3" onClick={handleClearAllFavorites}>Clear All Favorites</button>
       <ul className="list-group">
         {favoriteMarkets.map((favorite) => (
@@ -126,8 +156,8 @@ function FavoritesList() {
                 <thead>
                   <tr>
                     <th style={tableCellStyle}>Contract Name</th>
-                    <th style={tableCellStyle}>Yes </th>
-                    <th style={tableCellStyle}>No </th>
+                    <th style={tableCellStyle}>Yes</th>
+                    <th style={tableCellStyle}>No</th>
                     <th style={tableCellStyle}>Kelly Bet (Yes)</th>
                     <th style={tableCellStyle}>Kelly Bet (No)</th>
                   </tr>
@@ -136,17 +166,18 @@ function FavoritesList() {
                   {favorite.contracts.map((contract) => {
                     const yesProbability = contract.bestBuyYesCost / 100;
                     const noProbability = contract.bestBuyNoCost / 100;
-                    const odds = 1; // Assuming even odds for simplicity
-                    const kellyBetYes = kellyBet(yesProbability, odds).toFixed(2);
-                    const kellyBetNo = kellyBet(noProbability, odds).toFixed(2);
+                    const yesOdds = calculateOdds(yesProbability);
+                    const noOdds = calculateOdds(noProbability);
+                    const kellyBetYes = kellyBet(yesProbability, yesOdds).toFixed(2);
+                    const kellyBetNo = kellyBet(noProbability, noOdds).toFixed(2);
 
                     return (
                       <tr key={`${contract.id}-${favorite.market_id}`}>
                         <td style={tableCellStyle}>{contract.name}</td>
                         <td style={tableCellStyle}>{contract.bestBuyYesCost}</td>
                         <td style={tableCellStyle}>{contract.bestBuyNoCost}</td>
-                        <td style={tableCellStyle}>${kellyBetYes}</td>
-                        <td style={tableCellStyle}>${kellyBetNo}</td>
+                        <td style={tableCellStyle}>{isNaN(kellyBetYes) ? '-' : `$${kellyBetYes}`}</td>
+                        <td style={tableCellStyle}>{isNaN(kellyBetNo) ? '-' : `$${kellyBetNo}`}</td>
                       </tr>
                     );
                   })}
