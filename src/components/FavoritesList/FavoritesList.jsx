@@ -75,15 +75,13 @@ function FavoritesList() {
       });
   };
 
-
   //This percentage will be the same for all markets. 
   const fixedFractionalBet = (percentage) => {
     return bankroll * (percentage / 100);
   };
 
-//This percentage should differ for each market according to price.  When yes/no probabilities don't add up to a 100 
-//they should not be equal.  
-
+  //This percentage should differ for each market according to price.  When yes/no probabilities don't add up to a 100 
+  //they should not be equal.  
   const kellyBet = (probability, odds) => {
     if (probability <= 0 || probability >= 1 || odds <= 0) {
       return 0;
@@ -92,7 +90,6 @@ function FavoritesList() {
     const scaledKelly = bankroll * kellyFraction * (betPercentage / 100);
     return Math.max(scaledKelly, 0); 
   };
-
 
   //Treats the price as the probability
   //To improve accuracy 
@@ -143,7 +140,10 @@ function FavoritesList() {
           className="form-control"
         />
       </div>
-      <button className="btn btn-danger mb-3" onClick={handleClearAllFavorites}>Clear All Favorites</button>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>Your Favorite Markets</h2>
+        <button className="btn btn-danger" onClick={handleClearAllFavorites}>Clear All Favorites</button>
+      </div>
       <ul className="list-group">
         {favoriteMarkets.map((favorite) => (
           <li key={`${favorite.market_id}-${favorite.user_id}`} className="list-group-item">
