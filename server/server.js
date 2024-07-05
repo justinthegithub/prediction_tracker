@@ -12,7 +12,8 @@ const passport = require('./strategies/user.strategy');
 // Route Includes
 const userRouter = require('./routes/user.router');
 const favoriteMarketsRouter = require('./routes/favoriteMarkets.router');
-const bankrollRouter = require('./routes/bankroll.router'); // Import the new router
+const bankrollRouter = require('./routes/bankroll.router');
+const marketNotesRouter = require('./routes/marketNotes.router'); // Import the new router
 
 // Express Middleware
 app.use(express.json());
@@ -28,7 +29,8 @@ app.use(passport.session());
 // Routes
 app.use('/api/user', userRouter);
 app.use('/api/favoriteMarkets', favoriteMarketsRouter);
-app.use('/api/bankroll', bankrollRouter); // Ensure this is correctly included
+app.use('/api/bankroll', bankrollRouter);
+app.use('/api/marketNotes', marketNotesRouter); // Ensure this is correctly included
 
 app.get('/api/markets', async (req, res) => {
   try {
