@@ -1,8 +1,9 @@
 const express = require('express');
-const pool = require('../modules/pool');
+const pool = require('../modules/ppool');
 const router = express.Router();
 
-router.post('/', async (req, res) => {  
+// POST route to add or update a note
+router.post('/', async (req, res) => {
   const { favorite_market_id, note_body } = req.body;
 
   const checkNoteQuery = `
@@ -32,6 +33,21 @@ router.post('/', async (req, res) => {
     }
   } catch (error) {
     console.error('Error adding or editing note:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// GET route to fetch all notes
+router.get('/', async (req, res) => {
+  const getNotesQuery = `
+    SELECT * FROM "Market_Notes"
+  `;
+
+  try {
+    const result = await pool.query(getNotesQuery);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching notes:', error.message);
     res.status(500).send('Internal Server Error');
   }
 });

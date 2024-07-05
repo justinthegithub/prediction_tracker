@@ -13,13 +13,17 @@ const passport = require('./strategies/user.strategy');
 const userRouter = require('./routes/user.router');
 const favoriteMarketsRouter = require('./routes/favoriteMarkets.router');
 const bankrollRouter = require('./routes/bankroll.router'); // Import the new router
+const marketNotesRouter = require('./routes/marketNotes.router');
+
+
+
 
 // Express Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static('build'));
-
+app.use('/api/marketNotes', marketNotesRouter); 
 // Passport Session Configuration
 app.use(sessionMiddleware);
 app.use(passport.initialize());

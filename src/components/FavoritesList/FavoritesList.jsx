@@ -4,10 +4,12 @@ import axios from 'axios';
 function FavoritesList() {
   const [username, setUsername] = useState('');
   const [favoriteMarkets, setFavoriteMarkets] = useState([]);
-  const [bankroll, setBankroll] = useState(5);  
+  const [bankroll, setBankroll] = useState(5);
   const [newBankroll, setNewBankroll] = useState('');
-  const [betPercentage, setBetPercentage] = useState(3); 
-  const [kellyAdjustment, setKellyAdjustment] = useState(0.00); 
+  const [betPercentage, setBetPercentage] = useState(3);
+  const [kellyAdjustment, setKellyAdjustment] = useState(0.00);
+  const [notes, setNotes] = useState({});
+  const [newNote, setNewNote] = useState({});
 
   useEffect(() => {
     axios.get('/api/user')
@@ -20,6 +22,7 @@ function FavoritesList() {
 
     fetchFavoriteMarkets();
     fetchBankroll();
+    fetchNotes(); // Fetch notes when component mounts
   }, []);
 
   const fetchFavoriteMarkets = () => {
@@ -39,6 +42,20 @@ function FavoritesList() {
       })
       .catch(error => {
         console.log('Problem with fetching bankroll', error);
+      });
+  };
+
+  const fetchNotes = () => {
+    axios.get('/api/marketNotes')
+      .then(response => {
+        const notesData = response.data.reduce((acc, note) => {
+          acc[note.favorite_market_id] = note.note_body;
+          return acc;
+        }, {});
+        setNotes(notesData);
+      })
+      .catch(error => {
+        console.log('Problem with fetching notes', error);
       });
   };
 
@@ -75,14 +92,26 @@ function FavoritesList() {
       });
   };
 
+  const handleAddOrUpdateNote = (marketId) => {
+    axios.post('/api/marketNotes', { favorite_market_id: marketId, note_body: newNote[marketId] || '' })
+      .then(response => {
+        setNotes(prevNotes => ({
+          ...prevNotes,
+          [marketId]: response.data.note_body
+        }));
+        setNewNote(prevNewNote => ({
+          ...prevNewNote,
+          [marketId]: ''
+        }));
+      })
+      .catch(error => {
+        console.log('Problem with adding or updating note', error);
+      });
+  };
 
-  //This percentage will be the same for all markets. 
   const fixedFractionalBet = (percentage) => {
     return bankroll * (percentage / 100);
   };
-
-//This percentage should differ for each market according to price.  When yes/no probabilities don't add up to a 100 
-//they should not be equal.  
 
   const kellyBet = (probability, odds) => {
     if (probability <= 0 || probability >= 1 || odds <= 0) {
@@ -90,12 +119,9 @@ function FavoritesList() {
     }
     const kellyFraction = ((probability * (odds + 1) - 1) / odds) + kellyAdjustment;
     const scaledKelly = bankroll * kellyFraction * (betPercentage / 100);
-    return Math.max(scaledKelly, 0); 
+    return Math.max(scaledKelly, 0);
   };
 
-
-  //Treats the price as the probability
-  //To improve accuracy 
   const calculateOdds = (price) => {
     if (price <= 0 || price >= 1) {
       return 0;
@@ -184,6 +210,21 @@ function FavoritesList() {
                 </tbody>
               </table>
             )}
+            <div className="mt-3">
+              <h3>Notes:</h3>
+              <textarea
+                value={newNote[favorite.market_id] || notes[favorite.market_id] || ''}
+                onChange={(e) => setNewNote(prevNewNote => ({
+                  ...prevNewNote,
+                  [favorite.market_id]: e.target.value
+                }))}
+                placeholder="Add a note"
+                className="form-control"
+              />
+              <button className="btn btn-primary mt-2" onClick={() => handleAddOrUpdateNote(favorite.market_id)}>
+                Save Note
+              </button>
+            </div>
           </li>
         ))}
       </ul>
