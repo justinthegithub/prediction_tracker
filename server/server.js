@@ -13,7 +13,7 @@ const passport = require('./strategies/user.strategy');
 const userRouter = require('./routes/user.router');
 const favoriteMarketsRouter = require('./routes/favoriteMarkets.router');
 const bankrollRouter = require('./routes/bankroll.router');
-const marketNotesRouter = require('./routes/marketNotes.router'); // Import the new router
+const marketNotesRouter = require('./routes/marketNotes.router'); // Import the market notes router
 
 // Express Middleware
 app.use(express.json());
