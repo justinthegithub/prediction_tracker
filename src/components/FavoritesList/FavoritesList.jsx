@@ -1,3 +1,12 @@
+// Displays a user's favorite markets, their current bankroll, 
+// and allows for updating the bankroll. 
+// removing individual favorite markets or clearing all favorites. 
+// calculates betting amounts 
+// based on fixed fractional and Kelly criteria. 
+//  general notes.
+
+
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Notes from '../Notes/Notes.jsx'; 
