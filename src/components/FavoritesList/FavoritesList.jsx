@@ -11,11 +11,16 @@ function FavoritesList() {
   const [betPercentage, setBetPercentage] = useState(3); 
   const [kellyAdjustment, setKellyAdjustment] = useState(0.00); 
 
-  useEffect(() => {
+  // Take user info and their general notes, then load favorite markets and bankroll when the component loads
+ useEffect(() => {
     axios.get('/api/user')
       .then(response => {
         setUserId(response.data.id); 
         setUsername(response.data.username);
+<<<<<<< HEAD
+=======
+        fetchGeneralNotes(response.data.id); 
+>>>>>>> 85ca49474595257f8982c360650a435f77ba527b
       })
       .catch(error => {
         console.log('Problem with FavoritesList getting user data', error);
