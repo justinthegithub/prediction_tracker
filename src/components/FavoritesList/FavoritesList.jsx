@@ -10,6 +10,8 @@ function FavoritesList() {
   const [newBankroll, setNewBankroll] = useState('');
   const [betPercentage, setBetPercentage] = useState(3); 
   const [kellyAdjustment, setKellyAdjustment] = useState(0.00); 
+  
+  // Grab user info and their general notes, then load favorite markets and bankroll when the component loads
 
   useEffect(() => {
     axios.get('/api/user')
@@ -44,6 +46,10 @@ function FavoritesList() {
         console.log('Problem with fetching bankroll', error);
       });
   };
+
+  // If a new bankroll value is provided, send a request to update the bankroll,
+  // then grab the updated bankroll and clear the input field. Log any errors when the update fails.
+
 
   const handleUpdateBankroll = () => {
     if (newBankroll) {
