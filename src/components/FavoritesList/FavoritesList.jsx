@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Notes from '../Notes/Notes.jsx'; 
 
 function FavoritesList() {
-  const [userId, setUserId] = useState(null); // Change to userId
+  const [userId, setUserId] = useState(null); 
   const [username, setUsername] = useState('');
   const [favoriteMarkets, setFavoriteMarkets] = useState([]);
   const [bankroll, setBankroll] = useState(5);  
   const [newBankroll, setNewBankroll] = useState('');
   const [betPercentage, setBetPercentage] = useState(3); 
   const [kellyAdjustment, setKellyAdjustment] = useState(0.00); 
-  const [generalNotes, setGeneralNotes] = useState([]);
-  const [newNote, setNewNote] = useState('');
-  const [editingNoteId, setEditingNoteId] = useState(null);
-  const [editingNoteBody, setEditingNoteBody] = useState('');
 
   useEffect(() => {
     axios.get('/api/user')
       .then(response => {
-        setUserId(response.data.id); // Ensure userId is set
+        setUserId(response.data.id); 
         setUsername(response.data.username);
-        fetchGeneralNotes(response.data.id); // Fetch general notes using userId
       })
       .catch(error => {
         console.log('Problem with FavoritesList getting user data', error);
@@ -49,16 +45,6 @@ function FavoritesList() {
       });
   };
 
-  const fetchGeneralNotes = (userId) => {
-    axios.get(`/api/marketNotes/general/${userId}`)
-      .then(response => {
-        setGeneralNotes(response.data);
-      })
-      .catch(error => {
-        console.log('Problem with fetching general notes', error);
-      });
-  };
-
   const handleUpdateBankroll = () => {
     if (newBankroll) {
       axios.put('/api/bankroll', { bankroll: newBankroll })
@@ -78,7 +64,7 @@ function FavoritesList() {
         fetchFavoriteMarkets();
       })
       .catch(error => {
-        console.error('Error removing market from favorites:', error);
+        console.error('Problem removing market from favorites:', error);
       });
   };
 
@@ -88,50 +74,7 @@ function FavoritesList() {
         fetchFavoriteMarkets();
       })
       .catch(error => {
-        console.error('Error clearing all favorites:', error);
-      });
-  };
-
-  const handleAddNote = () => {
-    if (!newNote) return;
-
-    axios.post('/api/marketNotes/general', { user_id: userId, note_body: newNote })
-      .then(response => {
-        setGeneralNotes([...generalNotes, response.data]);
-        setNewNote('');
-      })
-      .catch(error => {
-        console.log('Problem with adding note', error);
-      });
-  };
-
-  const handleEditNote = (noteId) => {
-    setEditingNoteId(noteId);
-    const note = generalNotes.find(note => note.id === noteId);
-    if (note) {
-      setEditingNoteBody(note.note_body);
-    }
-  };
-
-  const handleSaveNote = (noteId) => {
-    axios.put(`/api/marketNotes/general/${noteId}`, { note_body: editingNoteBody })
-      .then(() => {
-        fetchGeneralNotes(userId);
-        setEditingNoteId(null);
-        setEditingNoteBody('');
-      })
-      .catch(error => {
-        console.log('Problem with editing note', error);
-      });
-  };
-
-  const handleDeleteNote = (noteId) => {
-    axios.delete(`/api/marketNotes/general/${noteId}`)
-      .then(() => {
-        fetchGeneralNotes(userId);
-      })
-      .catch(error => {
-        console.log('Problem with deleting note', error);
+        console.error('Problem clearing all favorites:', error);
       });
   };
 
@@ -244,45 +187,7 @@ function FavoritesList() {
           </li>
         ))}
       </ul>
-      <div className="mt-4">
-        <h2>General Notes</h2>
-        <ul className="list-group mb-3">
-          {generalNotes.map((note) => (
-            <li key={note.id} className="list-group-item">
-              {editingNoteId === note.id ? (
-                <div>
-                  <textarea
-                    value={editingNoteBody}
-                    onChange={(e) => setEditingNoteBody(e.target.value)}
-                    className="form-control"
-                    maxLength={255}
-                  />
-                  <button className="btn btn-primary mt-2" onClick={() => handleSaveNote(note.id)}>Save</button>
-                  <button className="btn btn-secondary mt-2 ml-2" onClick={() => setEditingNoteId(null)}>Cancel</button>
-                </div>
-              ) : (
-                <div className="d-flex justify-content-between align-items-center">
-                  <span>{note.note_body}</span>
-                  <div>
-                    <button className="btn btn-secondary btn-sm" onClick={() => handleEditNote(note.id)}>Edit</button>
-                    <button className="btn btn-danger btn-sm ml-2" onClick={() => handleDeleteNote(note.id)}>Delete</button>
-                  </div>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-        <div>
-          <textarea
-            value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
-            placeholder="Add a new note"
-            className="form-control"
-            maxLength={255}
-          />
-          <button className="btn btn-primary mt-2" onClick={handleAddNote}>Add Note</button>
-        </div>
-      </div>
+      <Notes userId={userId} /> 
     </div>
   );
 }

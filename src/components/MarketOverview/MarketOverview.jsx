@@ -56,7 +56,7 @@ function MarketOverview() {
         <h1>Market Overview</h1>
         <div>
           <button className="btn btn-secondary mr-2" onClick={toggleShowDatabaseMarkets}>
-            {showDatabaseMarkets ? 'Hide Database Markets' : 'Show Database Markets'}
+            {showDatabaseMarkets ? 'Hide PredictIt Markets' : 'Show PredictIt Markets'}
           </button>
           <button className="btn btn-secondary" onClick={fetchApiMarkets}>
             {showApiMarkets ? 'Hide Manifold Markets' : 'Browse Manifold Markets'}
