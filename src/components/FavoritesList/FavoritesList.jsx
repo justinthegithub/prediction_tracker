@@ -121,6 +121,20 @@ function FavoritesList() {
     padding: '8px',
   };
 
+
+  // It shows the username and a button to clear all favorite markets.
+  // Displays the current bankroll with an input to update it, and a button to submit the new amount.
+  // Displays a bet percentage input and calculates the fixed fractional bet based on the percentage.
+  // Includes an input for Kelly adjustment.
+  // Lists all favorite markets with options to remove each one.
+  // For each market, displays a table of contracts with calculated Kelly bets for 'Yes' and 'No'.
+  //  general notes for the user.
+
+
+
+
+
+  
   return (
     <div className="container">
       <div className="d-flex justify-content-between align-items-center mb-3">
