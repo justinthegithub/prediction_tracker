@@ -36,7 +36,15 @@ function LoginPage() {
               <h1>Will a General Artificial Intelligence System Try to Prevent Itself from Being Shutdown by 2027?</h1>
             </div>
           </div>
+          <div className="carousel-item noticia-text-regular">
+            <div className="d-block w-100" style={{ ...carouselItemStyle, backgroundColor: '#ced4da' }}>
+              <h1>What will the price of Bitcoin be on Dec. 31 2024?</h1>
+            </div>
+          </div>
+
         </div>
+        
+        
         <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
           <span className="carousel-control-prev-icon" aria-hidden="true"></span>
           <span className="visually-hidden">Previous</span>
