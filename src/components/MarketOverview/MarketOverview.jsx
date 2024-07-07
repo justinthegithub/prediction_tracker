@@ -66,7 +66,7 @@ function MarketOverview() {
       
       {showDatabaseMarkets && (
         <>
-          <h2>Database Markets</h2>
+          <h2>PredictIt Markets</h2>
           <ul className="list-group mb-4">
             {databaseMarkets.length > 0 ? databaseMarkets.map(market => (
               <li key={market.id} className="list-group-item">
