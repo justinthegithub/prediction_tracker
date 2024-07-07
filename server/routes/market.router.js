@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../modules/pool.js');
 
+
+
+// Retrieve market name by market ID
+//Takes the market ID from the request parameters.
+//Checkes the "Markets" table for a record with the provided market ID.
+// -If a record is found, returns the market ID and market name in the response.
+
+
+
+
+
 router.get('/:marketId', (req, res) => {
   const marketId = req.params.marketId;
 

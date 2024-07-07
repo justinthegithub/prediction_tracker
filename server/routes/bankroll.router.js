@@ -3,7 +3,14 @@ const pool = require('../modules/pool');
 const router = express.Router();
 
 
-//Read
+//READ
+
+//Checks the "User_Bankroll" table for a record with the current user's ID.
+// If found, returns the bankroll data.
+// If not found, returns a 404 status with a message.
+
+
+
 router.get('/', (req, res) => {
   const queryText = `SELECT * FROM "User_Bankroll" WHERE "user_id" = $1`;
   pool.query(queryText, [req.user.id])
@@ -21,6 +28,9 @@ router.get('/', (req, res) => {
 });
 
 //create
+// Extracts the bankroll value from the request body.
+// Inserts a new record into the "User_Bankroll" table with the user's ID and bankroll amount.
+// Returns the ID of the newly created bankroll record.
 
 router.post('/', (req, res) => {
   const { bankroll } = req.body;
@@ -39,7 +49,19 @@ router.post('/', (req, res) => {
     });
 });
 
-//UPDATE
+//UPDATE Extracts the bankroll value from the request body.
+// - First checks if a bankroll record exists for the current user.
+// - If a record exists, updates the bankroll amount.
+// - If no record exists, inserts a new bankroll record.
+// - Returns the ID of the updated or newly created bankroll record.
+
+
+
+
+
+
+
+
 router.put('/', (req, res) => {
   const { bankroll } = req.body;
 
