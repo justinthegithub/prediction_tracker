@@ -33,7 +33,7 @@ Button
   border-width: 1px 1px 3px;
   border-radius: 4px;
   background-color: #007bff;
-  color: #f8f8f8;
+  color: #110101;
   font-size: 1.1rem;
   outline: 0;
   cursor: pointer;
@@ -55,7 +55,7 @@ Button
 }
 
 .btn:hover {
-  background-color: white;
+  background-color: rgb(21, 2, 2);
   text-decoration: none;
 }
 
@@ -73,7 +73,7 @@ Button
 .btn_asLink:hover {
   background-color: transparent;
   border-color: white;
-  color: white;
+  color: rgb(227, 184, 184);
 }
 
 /* --------------------------------------------------------------------------------
