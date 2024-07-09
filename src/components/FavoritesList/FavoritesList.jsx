@@ -1,12 +1,3 @@
-// Displays a user's favorite markets, their current bankroll, 
-// and allows for updating the bankroll. 
-// removing individual favorite markets or clearing all favorites. 
-// calculates betting amounts 
-// based on fixed fractional and Kelly criteria. 
-//  general notes.
-
-
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Notes from '../Notes/Notes.jsx'; 
@@ -58,7 +49,6 @@ function FavoritesList() {
 
   // If a new bankroll value is provided, send a request to update the bankroll,
   // then grab the updated bankroll and clear the input field. Log any errors when the update fails.
-
 
   const handleUpdateBankroll = () => {
     if (newBankroll) {
@@ -121,19 +111,13 @@ function FavoritesList() {
     padding: '8px',
   };
 
-
   // It shows the username and a button to clear all favorite markets.
   // Displays the current bankroll with an input to update it, and a button to submit the new amount.
   // Displays a bet percentage input and calculates the fixed fractional bet based on the percentage.
   // Includes an input for Kelly adjustment.
   // Lists all favorite markets with options to remove each one.
   // For each market, displays a table of contracts with calculated Kelly bets for 'Yes' and 'No'.
-  //  general notes for the user.
-
-
-
-
-
+  // General notes for the user.
   
   return (
     <div className="container">
@@ -164,7 +148,7 @@ function FavoritesList() {
         <p>Fixed Fraction Bet: ${fixedFractionalBet(betPercentage).toFixed(2)}</p>
       </div>
       <div className="mb-3">
-        <h2>Kelly Adjustment:</h2>
+        <h2>Bet Adjustment:</h2>
         <input
           type="number"
           value={kellyAdjustment}
@@ -187,8 +171,8 @@ function FavoritesList() {
                     <th style={tableCellStyle}>Contract Name</th>
                     <th style={tableCellStyle}>Yes</th>
                     <th style={tableCellStyle}>No</th>
-                    <th style={tableCellStyle}>Kelly Bet (Yes)</th>
-                    <th style={tableCellStyle}>Kelly Bet (No)</th>
+                    <th style={tableCellStyle}>Suggested Bet (Yes)</th>
+                    <th style={tableCellStyle}>Suggested Bet (No)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -203,8 +187,8 @@ function FavoritesList() {
                     return (
                       <tr key={`${contract.id}-${favorite.market_id}`}>
                         <td style={tableCellStyle}>{contract.name}</td>
-                        <td style={tableCellStyle}>{contract.bestBuyYesCost}</td>
-                        <td style={tableCellStyle}>{contract.bestBuyNoCost}</td>
+                        <td style={tableCellStyle}>${contract.bestBuyYesCost || 0}</td>
+                        <td style={tableCellStyle}>${contract.bestBuyNoCost || 0}</td>
                         <td style={tableCellStyle}>{isNaN(kellyBetYes) ? '-' : `$${kellyBetYes}`}</td>
                         <td style={tableCellStyle}>{isNaN(kellyBetNo) ? '-' : `$${kellyBetNo}`}</td>
                       </tr>
