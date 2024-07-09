@@ -1,5 +1,4 @@
 import './AboutPage.css';
-
 import React from 'react';
 
 // This is one of our simplest components
@@ -13,12 +12,17 @@ function AboutPage() {
       <div>
         <h1>Prediction Market Tracker</h1>
         <p>
-          This app helps you track and analyze prediction markets. Use it to monitor events, make informed bets, and calculate potential outcomes.
+          This information gathering app helps you track and analyze prediction markets. Use it to monitor events, make informed bets, and calculate potential outcomes.
         </p>
 
         <h1>What are Prediction Markets?</h1>
         <p>
-          Prediction markets are platforms where people trade contracts based on the outcome of future events. The price of these contracts reflects the crowd's collective wisdom about the likelihood of the event occurring.
+          Prediction markets are platforms where people trade contracts based on the outcome of future events. The price of these contracts reflects the crowd's "collective wisdom" about the likelihood of the event occurring.
+        </p>
+
+        <h1>Focus on Political Predictions</h1>
+        <p>
+          Our primary focus is on using the Predict platform for political predictions. This allows users to gain insights into election outcomes, policy changes, and other political events by analyzing the market prices and trends on the Predict platform.
         </p>
 
         <h1>Why Use Prediction Markets?</h1>
@@ -33,4 +37,3 @@ function AboutPage() {
 }
 
 export default AboutPage;
-
