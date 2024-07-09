@@ -53,7 +53,7 @@ function MarketOverview() {
   return (
     <div className="container">
       <div className="d-flex justify-content-between align-items-center my-4">
-        <h1>Market Overview</h1>
+        <h1>Active Markets</h1>
         <div>
           <button className="btn btn-secondary mr-2" onClick={toggleShowDatabaseMarkets}>
             {showDatabaseMarkets ? 'Hide PredictIt Markets' : 'Show PredictIt Markets'}
