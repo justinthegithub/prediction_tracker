@@ -16,12 +16,17 @@ function AboutPage() {
         </p>
 
         <h1>What are Prediction Markets?</h1>
-        <p>
-          Prediction markets are platforms where people trade contracts based on the outcome of future events. The price of these contracts reflects the crowd's "collective wisdom" about the likelihood of the event occurring.
-        </p>
-        <p>
-          The pricing in prediction markets is generally structured such that each contract is priced between $0 and $1. A contract priced at $0.60, for example, suggests a 60% probability of the event occurring according to the market consensus.
-        </p>
+        <ul>
+          <li>
+            Prediction markets are platforms where people trade contracts based on the outcome of future events. The price of these contracts reflects the crowd's "collective wisdom" about the likelihood of the event occurring.
+          </li>
+          <li>
+            The pricing in prediction markets is generally structured such that each contract is priced between $0 and $1.
+          </li>
+          <li>
+            A contract priced at $0.60, for example, suggests a 60% probability of the event occurring according to the market consensus.
+          </li>
+        </ul>
 
         <h1>Focus on Political Predictions</h1>
         <p>
